@@ -9,18 +9,33 @@ import {
   HorizontalGridLines,
   VerticalGridLines,
   LineSeries,
-  LineSeriesCanvas
+  Hint,
+  Crosshair
 } from 'react-vis';
 
 export default class Line1 extends Component {
   state = {
-    useCanvas: false
+    lineWidth: "2px",
+    hoveredLine: null,
+    crossHairValues: [],
+    data:[{
+                x: new Date('2019-06-02'), y: 2
+            }, {
+                x: new Date('2019-06-03'), y: 2
+            }, {
+                x: new Date('2019-06-04'), y: 3
+            }, {
+                x: new Date('2019-06-05'), y: 5
+            }]
   };
   render() {
-
+    const { lineWidth, hoveredLine, data } = this.state;
     return (
       <div>
-        <XYPlot width={900} height={300}>
+        <XYPlot 
+        width={900} 
+        height={300}
+        onMouseLeave={() => this.setState({crossHairValues: []})}>
           <HorizontalGridLines />
           <VerticalGridLines />
           <XAxis  
@@ -47,17 +62,34 @@ export default class Line1 extends Component {
               textAnchor: 'end'
             }}
             />
+            {/* {hoveredLine && (<Hint
+                        xType="literal"
+                        yType="literal"
+                        value={{
+                        x: hoveredLine
+                    }}/>)} */}
           <LineSeries
             className="first-series"
-            data={[{
-                x: new Date('2019-06-02'), y: 2
-            }, {
-                x: new Date('2019-06-03'), y: 2
-            }, {
-                x: new Date('2019-06-04'), y: 3
-            }, {
-                x: new Date('2019-06-05'), y: 5
-            }]}
+            style={{
+              strokeWidth: lineWidth
+            }}
+            onSeriesMouseOver={() => {
+              this.setState({lineWidth: "6px"});
+              console.log("Mousing Over. This is the event.")
+            }}
+
+            onNearestX={(datapoint, {event})=>{
+              this.setState({crossHairValues: data.map(d => d[event])})
+              console.log("onNearestX datapoint", {datapoint});
+              console.log("onNearestX event", {event})
+            }}
+
+            onSeriesMouseOut={() => {
+              this.setState([{lineWidth: "2px"}]);
+              console.log("SeriesMouseOut", {lineWidth})
+            }}
+
+            data={data}
           />
           <LineSeries className="second-series" data={null} />
           <LineSeries
@@ -87,6 +119,7 @@ export default class Line1 extends Component {
             }, {
                 x: new Date('2019-06-05'), y: 7
             }]}          />
+            <Crosshair values={this.state.crossHairValues} />
         </XYPlot>
       </div>
     );
