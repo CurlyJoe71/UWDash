@@ -61,13 +61,23 @@ export default class HorzBar1 extends Component {
                         data={data}
                         color="red"
                         onValueMouseOver={d => this.setState({hoveredBar: d})}/> 
-                        {hoveredBar && (<Hint
+                        {hoveredBar && (
+                        <Hint
                         xType="literal"
                         yType="literal"
+                        align={{horizontal: 'left', vertical: 'top'}}
                         value={{
-                        x: hoveredBar.x,
-                        y: hoveredBar.y
-                    }}/>)}
+                        hoveredBar
+                    }}>
+                        <div style={
+                            {background: 'green', 
+                            padding:'5px', 
+                            borderRadius:'7px'}}>
+                          <h3>Type: {hoveredBar.x}</h3>
+                          <p>#Items: {hoveredBar.y}</p>
+                        </div>
+                    </Hint>
+                    )}
                 </XYPlot>
             </div>
         );
